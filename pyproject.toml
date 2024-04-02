@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "rag"
+version = "0.1.0"
+description = "Using LangChain and MongoDB for Retrieval-Augmented Generation with LLMs"
+authors = ["Tiago Martins Speckart <tiagospeckart@gmail.com>"]
+readme = "README.md"
+packages = [
+    { include = "app" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+uvicorn = "^0.23.2"
+langserve = {extras = ["server"], version = ">=0.0.30"}
+pydantic = "<2"
+fastapi = "^0.110.1"
+
+
+[tool.poetry.group.dev.dependencies]
+langchain-cli = ">=0.0.15"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
