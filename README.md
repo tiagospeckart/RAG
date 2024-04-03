@@ -1,5 +1,16 @@
 # RAG
 
+Project for developing a Retrieval-Augmented Generation with LLMs and data ingested from documents.
+
+## Tech Stack
+
+- Python 3.11
+- Poetry: package management
+- FastAPI + LangServe for API endpoints and playground (experimental)
+- Uvicorn: ASGI server that powers FastAPI for serving HTTP requests.
+- LangChain
+- Pydantic: data validation and settings management using Python type annotations.
+
 ## Installation
 
 Install the LangChain CLI if you haven't yet
@@ -28,18 +39,6 @@ Note: you remove packages by their api path
 
 ```bash
 langchain app remove my/custom/path/rag
-```
-
-## Setup LangSmith (Optional)
-LangSmith will help us trace, monitor and debug LangChain applications. 
-LangSmith is currently in private beta, you can sign up [here](https://smith.langchain.com/). 
-If you don't have access, you can skip this section
-
-
-```shell
-export LANGCHAIN_TRACING_V2=true
-export LANGCHAIN_API_KEY=<your-api-key>
-export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "default"
 ```
 
 ## Launch LangServe
@@ -77,3 +76,7 @@ We also expose port 8080 with the `-p 8080:8080` option.
 ```shell
 docker run -e OPENAI_API_KEY=$OPENAI_API_KEY -p 8080:8080 my-langserve-app
 ```
+
+## References
+
+[LangChain Templates](https://github.com/langchain-ai/langchain/tree/master/templates)
