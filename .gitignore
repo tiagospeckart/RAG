@@ -2,6 +2,9 @@
 *.env
 venv
 
+# Data folder
+/data
+
 settings-me.yaml
 
 .ruff_cache
