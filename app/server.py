@@ -7,12 +7,13 @@ from fastapi import FastAPI
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import AzureChatOpenAI
-from langserve import add_routes
-from langserve.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
+from starlette.responses import RedirectResponse
 
 # load environment variables
 load_dotenv()
 
+# Model configuration
 openai.api_key = os.getenv("AZURE_OPENAI_API_KEY")
 openai.api_base = os.getenv("AZURE_OPENAI_ENDPOINT")
 openai.api_version = "2023-03-15-preview"
@@ -32,6 +33,8 @@ app = FastAPI(
 )
 
 # Declare a chain + hardcoded system prompt
+# TODO: refactor out to its proper place
+
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", "You are a helpful, professional assistant named Mag."),
@@ -42,6 +45,8 @@ prompt = ChatPromptTemplate.from_messages(
 chain = prompt | model
 
 
+# classes
+# TODO: refactor out to its proper place
 class InputChat(BaseModel):
     """Input for the chat endpoint."""
 
@@ -51,16 +56,37 @@ class InputChat(BaseModel):
     )
 
 
-# Add routes
-add_routes(
-    app,
-    chain.with_types(input_type=InputChat),
-    enable_feedback_endpoint=True,
-    enable_public_trace_link_endpoint=True,
-    playground_type="chat",
-)
+# Routes
+# TODO: put this code inside it's own module
+path = "/v1"
+
+
+@app.get("/")
+async def redirect_to_docs():
+    return RedirectResponse(url="/docs")
+
+
+@app.post(path + "/invoke")
+async def invoke_runnable():
+    pass
+
+
+@app.post(path + "/invoke")
+async def invoke_runnable():
+    pass
+
+
+@app.post(path + "/stream")
+async def stream_runnable():
+    pass
+
+
+# Server init
 
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    host = os.getenv("HOST", "localhost")
+    port = int(os.getenv("PORT", 8000))
+
+    uvicorn.run(app, host=host, port=port)
