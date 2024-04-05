@@ -44,11 +44,6 @@ async def invoke_runnable():
     pass
 
 
-@chat_router.post("/invoke")
-async def invoke_runnable():
-    pass
-
-
 @chat_router.post("/stream")
 async def stream_runnable():
     pass

@@ -1,5 +1,3 @@
-from typing import Literal, Optional
-
 from pydantic import BaseModel, Field
 
 from app.settings.settings_loader import load_settings

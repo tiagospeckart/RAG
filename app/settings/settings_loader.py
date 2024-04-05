@@ -6,7 +6,7 @@ from typing import Any
 from dotenv import load_dotenv
 
 from app.constants import PROJECT_ROOT_PATH
-from app.settings.yaml import load_yaml_with_envvars
+from app.settings.yaml_utils import load_yaml_with_envvars
 
 logger = logging.getLogger(__name__)
 
