@@ -9,7 +9,8 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import AzureChatOpenAI
 from pydantic import BaseModel, Field
 from starlette.responses import RedirectResponse
-
+from langchain_community.document_loaders import UnstructuredMarkdownLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 # load environment variables
 load_dotenv()
 
@@ -24,6 +25,25 @@ model = AzureChatOpenAI(
     temperature=0,
     openai_api_version="2023-05-15"
 )
+
+# DocLoader
+directory = './wiki-single-file.md'
+
+def load_docs(directory):
+  loader = UnstructuredMarkdownLoader(directory, mode = "elements")
+  documents = loader.load()
+  return documents
+
+documents = load_docs(directory)
+
+def split_docs(documents,chunk_size=1000,chunk_overlap=20,
+    length_function = len,):
+  text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+  docs = text_splitter.split_documents(documents)
+  return docs
+
+docs = split_docs(documents)
+print("Doc Split Size : "+str(len(docs)))
 
 # FastAPI configuration
 app = FastAPI(

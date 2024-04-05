@@ -32,3 +32,6 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# files
+wiki-single-file.md
