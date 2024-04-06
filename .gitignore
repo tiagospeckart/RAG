@@ -1,6 +1,9 @@
 .venv
-*.env
+.env
 venv
+
+# Data folder
+/data
 
 settings-me.yaml
 
