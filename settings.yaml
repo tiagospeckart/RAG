@@ -1,0 +1,33 @@
+# The default configuration file.
+# More information about configuration can be found in the documentation: https://docs.privategpt.dev/
+# Syntax in `private_pgt/settings/settings.py`
+server:
+  env_name: ${APP_ENV:dev}
+  port: ${PORT:8000}
+  cors:
+    enabled: false
+    allow_origins: ["*"]
+    allow_methods: ["*"]
+    allow_headers: ["*"]
+
+data:
+  local_data_folder: data
+
+azopenai:
+  api_key: ${AZ_OPENAI_API_KEY:}
+  azure_endpoint: ${AZ_OPENAI_ENDPOINT:}
+  embedding_deployment_name: ${AZ_OPENAI_EMBEDDING_DEPLOYMENT_NAME:}
+  llm_deployment_name: ${AZ_OPENAI_LLM_DEPLOYMENT_NAME:}
+  api_version: "2023-05-15"
+  embedding_model: text-embedding-ada-002
+  llm_model: gpt-35-turbo
+
+rag:
+  similarity_top_k: 2
+  #This value controls how many "top" documents the RAG returns to use in the context.
+  #similarity_value: 0.45
+  #This value is disabled by default.  If you enable these settings, the RAG will only use articles that meet a certain percentage score.
+  rerank:
+    enabled: false
+    model: cross-encoder/ms-marco-MiniLM-L-2-v2
+    top_n: 1
