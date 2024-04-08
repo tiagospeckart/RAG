@@ -9,7 +9,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "3.11.*"
 uvicorn = "^0.23.2"
 pydantic = "<2"
 fastapi = "^0.110.1"
@@ -18,6 +18,11 @@ openai = "^1.16.1"
 langchain-community = "^0.0.31"
 python-dotenv = "^1.0.1"
 injector = "^0.21.0"
+unstructured = "^0.13.2"
+markdown = "^3.6"
+langchain-text-splitters = "^0.0.1"
+langchain-core = "^0.1.40"
+nltk = "^3.8.1"
 
 
 [tool.poetry.group.dev.dependencies]

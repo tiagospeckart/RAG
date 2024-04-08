@@ -23,4 +23,4 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: secret
       MONGO_INITDB_DATABASE: vectorDB
     volumes:
-      - ./data:/data/db
+      - ./data/db:/data/db

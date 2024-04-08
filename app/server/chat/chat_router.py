@@ -1,11 +1,16 @@
 from typing import List, Union
 
 from fastapi import APIRouter
+from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_core.prompts import MessagesPlaceholder, ChatPromptTemplate
 from langchain_openai import AzureChatOpenAI
 from pydantic import BaseModel, Field
 from starlette.responses import RedirectResponse
+import os
+
+from app.components.ingest.ingest_component import load_docs, split_docs
+from app.constants import DOCUMENTS_PATH
 
 chat_router = APIRouter()
 
@@ -37,6 +42,15 @@ class InputChat(BaseModel):
 @chat_router.get("/")
 async def redirect_to_docs():
     return RedirectResponse(url="/docs")
+
+
+# TODO: send this path to another router
+@chat_router.get("/doc_load_test")
+async def invoke_runnable():
+    loaded_docs: list[Document] = load_docs(DOCUMENTS_PATH)
+    chunks = split_docs(loaded_docs)
+    print("Doc Split Size : " + str(len(chunks)))
+    pass
 
 
 @chat_router.post("/invoke")
