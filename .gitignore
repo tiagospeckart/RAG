@@ -1,5 +1,5 @@
 .venv
-.env
+*.env
 venv
 
 # Data folder
@@ -32,3 +32,7 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# Chroma
+*.bin
+*.sqlite3
