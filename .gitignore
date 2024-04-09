@@ -4,6 +4,7 @@ venv
 
 # Data folder
 /data
+/db
 
 settings-me.yaml
 

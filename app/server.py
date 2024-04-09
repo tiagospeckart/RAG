@@ -11,6 +11,12 @@ from pydantic import BaseModel, Field
 from starlette.responses import RedirectResponse
 from langchain_community.document_loaders import UnstructuredMarkdownLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.embeddings import SentenceTransformerEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import utils as chromautils
+from langchain.chains.conversation.memory import ConversationBufferWindowMemory
+from langchain.chains import ConversationalRetrievalChain
+from langchain.chains.question_answering import load_qa_chain
 # load environment variables
 load_dotenv()
 
@@ -26,7 +32,7 @@ model = AzureChatOpenAI(
     openai_api_version="2023-05-15"
 )
 
-# DocLoader
+# Start DocLoader
 directory = './wiki-single-file.md'
 
 def load_docs(directory):
@@ -44,7 +50,39 @@ def split_docs(documents,chunk_size=1000,chunk_overlap=20,
 
 docs = split_docs(documents)
 print("Doc Split Size : "+str(len(docs)))
+print(docs[0])
+# End DocLoader
+# --------------------//--------------------//--------------------//--------------------
+# Start Embbedings and ChromaDB
 
+embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
+# print(embeddings.embed_documents)
+docschroma = chromautils.filter_complex_metadata(docs)
+
+vectorstore = Chroma.from_documents(documents=docs,
+                                    embedding=embeddings,
+                                    persist_directory="./db"
+                                    )
+
+vectorstore.persist()
+retriever = vectorstore.as_retriever()
+qa = ConversationalRetrievalChain.from_llm(
+    llm = model,
+    retriever=retriever,
+    return_source_documents=True,
+)
+
+chain = load_qa_chain(model, chain_type="refine")
+query = "What's T-Store?"
+chain.run(input_documents=docs, question=query)
+
+# Conversario memory
+
+conversation_memory = ConversationBufferWindowMemory(
+    memory_key='chat_history',
+    k=5,
+    return_messages=True
+)
 # FastAPI configuration
 app = FastAPI(
     title="LangChain Server",
@@ -92,7 +130,7 @@ async def invoke_runnable():
 
 
 @app.post(path + "/invoke")
-async def invoke_runnable():
+async def invoke_runnable2():
     pass
 
 
