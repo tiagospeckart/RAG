@@ -4,20 +4,20 @@ from typing import List, Union
 import openai
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from langchain.chains import ConversationalRetrievalChain
+from langchain.chains.conversation.memory import ConversationBufferWindowMemory
+from langchain.chains.question_answering import load_qa_chain
+from langchain.prompts import PromptTemplate
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import DirectoryLoader, TextLoader
+from langchain_community.embeddings import SentenceTransformerEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import utils as chromautils
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import AzureChatOpenAI
 from pydantic import BaseModel, Field
 from starlette.responses import RedirectResponse
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import SentenceTransformerEmbeddings
-from langchain_community.vectorstores import Chroma
-from langchain_community.vectorstores import utils as chromautils
-from langchain.chains.conversation.memory import ConversationBufferWindowMemory
-from langchain.chains import ConversationalRetrievalChain
-from langchain.chains.question_answering import load_qa_chain
-from langchain_community.document_loaders import DirectoryLoader, TextLoader
-from langchain.prompts import PromptTemplate
 
 # load environment variables
 load_dotenv()
@@ -37,41 +37,44 @@ model = AzureChatOpenAI(
 # Start DocLoader
 # directory = './files/wiki-single-file.md'
 # remember to create a folder named files and copy your {document_name}.md
-directory = os.getenv("DOCUMENTS_FOLDER")
+documents_folder = os.getenv("DOCUMENTS_FOLDER")
+chroma_folder = os.getenv("DB_FOLDER")
 
 
-def load_docs(directory):
+def load_docs(docs_path):
     #   loader = UnstructuredMarkdownLoader(directory, mode = "single")
     text_loader_kwargs = {'autodetect_encoding': True}
-    loader = DirectoryLoader("./files/", glob="./*.md", loader_cls=TextLoader, loader_kwargs=text_loader_kwargs)
-    documents = loader.load()
-    return documents
+    loader = DirectoryLoader(docs_path, glob="./*.md", loader_cls=TextLoader, loader_kwargs=text_loader_kwargs)
+    loaded_documents = loader.load()
+    return loaded_documents
 
 
-documents = load_docs(directory)
+documents = load_docs(documents_folder)
 
 
-def split_docs(documents, chunk_size=1000, chunk_overlap=20,
-               length_function=len, ):
+def split_docs(unsplitted_docs,
+               chunk_size=1000,
+               chunk_overlap=20):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-    docs = text_splitter.split_documents(documents)
-    return docs
+    splitted_docs = text_splitter.split_documents(unsplitted_docs)
+    return splitted_docs
 
 
-docs = split_docs(documents)
-print("Doc Split Size : " + str(len(docs)))
-print(docs[0])
+chunks = split_docs(documents)
+print("Doc Split Size : " + str(len(chunks)))
+print(chunks[0])
+
 # End DocLoader
 # --------------------//--------------------//--------------------//--------------------
 # Start Embbedings and ChromaDB
 
 embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
 # print(embeddings.embed_documents)
-docschroma = chromautils.filter_complex_metadata(docs)
+docschroma = chromautils.filter_complex_metadata(chunks)
 # print(docschroma[0])
-vectorstore = Chroma.from_documents(documents=docs,
+vectorstore = Chroma.from_documents(documents=chunks,
                                     embedding=embeddings,
-                                    persist_directory="./db"
+                                    persist_directory=chroma_folder
                                     )
 
 vectorstore.persist()
@@ -128,7 +131,7 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-chain = prompt | model
+# chain = prompt | model
 
 
 # classes
