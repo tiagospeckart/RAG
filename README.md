@@ -13,11 +13,23 @@ Project for developing a Retrieval-Augmented Generation with LLMs and data inges
 
 ## Installation
 
-- Use the `example.env` file for creating your configuration. Missing fields may result in validation errors.
+### Locally
+
+#### Prerequisites
+
+- Any version of `python 3.11` in your `$PATH`
+- Configure your own environment variables. You can use an `.env` file using the `example.env` as reference.
+  - Missing fields may result in validation errors!
+
+_Optional_ 
+- Use a `conda` environment 
+
+#### Steps
+
 - Run `poetry install` to download the dependencies
 - Then run it with `poetry run python app`
 
-## With Docker
+### With Docker
 
 Run `docker compose up`
 
