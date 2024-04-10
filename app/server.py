@@ -38,23 +38,28 @@ model = AzureChatOpenAI(
 # directory = './files/wiki-single-file.md'
 # remember to create a folder named files and copy your {document_name}.md
 directory = os.getenv("DOCUMENTS_FOLDER")
+
+
 def load_docs(directory):
-#   loader = UnstructuredMarkdownLoader(directory, mode = "single")
-  text_loader_kwargs={'autodetect_encoding': True}
-  loader = DirectoryLoader("./files/", glob="./*.md", loader_cls=TextLoader, loader_kwargs=text_loader_kwargs)
-  documents = loader.load()
-  return documents
+    #   loader = UnstructuredMarkdownLoader(directory, mode = "single")
+    text_loader_kwargs = {'autodetect_encoding': True}
+    loader = DirectoryLoader("./files/", glob="./*.md", loader_cls=TextLoader, loader_kwargs=text_loader_kwargs)
+    documents = loader.load()
+    return documents
+
 
 documents = load_docs(directory)
 
-def split_docs(documents,chunk_size=1000,chunk_overlap=20,
-    length_function = len,):
-  text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-  docs = text_splitter.split_documents(documents)
-  return docs
+
+def split_docs(documents, chunk_size=1000, chunk_overlap=20,
+               length_function=len, ):
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    docs = text_splitter.split_documents(documents)
+    return docs
+
 
 docs = split_docs(documents)
-print("Doc Split Size : "+str(len(docs)))
+print("Doc Split Size : " + str(len(docs)))
 print(docs[0])
 # End DocLoader
 # --------------------//--------------------//--------------------//--------------------
@@ -80,14 +85,14 @@ template = (
 )
 condense_question_prompt = PromptTemplate.from_template(template)
 qa = ConversationalRetrievalChain.from_llm(
-    llm = model,
+    llm=model,
     retriever=retriever,
     return_source_documents=True,
     condense_question_prompt=condense_question_prompt,
     chain_type="stuff",
 )
 chain = load_qa_chain(model, chain_type="refine")
-query = "oque e T-Store ?"
+query = "O que é a T-Store?"
 
 print("ate aqui foi")
 response = retriever.get_relevant_documents("T-Store")
@@ -96,14 +101,14 @@ print("aqui e apos o retriever funcionar")
 # Examplo da Azure com qa
 chat_history = []
 result = {}
-awser = qa({"question": query, "chat_history": chat_history})
-chat_history.append((query, result["answer"]))
-print(awser)
+answser = qa({"question": query, "chat_history": chat_history})
+chat_history.append((query, answser))
+print(answser)
 # Conversario memory
 
 conversation_memory = ConversationBufferWindowMemory(
     memory_key='chat_history',
-    k=5,
+    k=2,
     return_messages=True
 )
 # FastAPI configuration
