@@ -9,7 +9,6 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import AzureChatOpenAI
 from pydantic import BaseModel, Field
 from starlette.responses import RedirectResponse
-from langchain_community.document_loaders import UnstructuredMarkdownLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import SentenceTransformerEmbeddings
 from langchain_community.vectorstores import Chroma
@@ -17,6 +16,9 @@ from langchain_community.vectorstores import utils as chromautils
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chains.question_answering import load_qa_chain
+from langchain_community.document_loaders import DirectoryLoader, TextLoader
+from langchain.prompts import PromptTemplate
+
 # load environment variables
 load_dotenv()
 
@@ -28,15 +30,18 @@ openai.api_type = "azure"
 
 model = AzureChatOpenAI(
     deployment_name="gpt-35-turbo",
-    temperature=0,
+    temperature=0.1,
     openai_api_version="2023-05-15"
 )
 
 # Start DocLoader
-directory = './wiki-single-file.md'
-
+# directory = './files/wiki-single-file.md'
+# remember to create a folder named files and copy your {document_name}.md
+directory = os.getenv("DOCUMENTS_FOLDER")
 def load_docs(directory):
-  loader = UnstructuredMarkdownLoader(directory, mode = "elements")
+#   loader = UnstructuredMarkdownLoader(directory, mode = "single")
+  text_loader_kwargs={'autodetect_encoding': True}
+  loader = DirectoryLoader("./files/", glob="./*.md", loader_cls=TextLoader, loader_kwargs=text_loader_kwargs)
   documents = loader.load()
   return documents
 
@@ -58,7 +63,7 @@ print(docs[0])
 embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
 # print(embeddings.embed_documents)
 docschroma = chromautils.filter_complex_metadata(docs)
-
+# print(docschroma[0])
 vectorstore = Chroma.from_documents(documents=docs,
                                     embedding=embeddings,
                                     persist_directory="./db"
@@ -66,16 +71,34 @@ vectorstore = Chroma.from_documents(documents=docs,
 
 vectorstore.persist()
 retriever = vectorstore.as_retriever()
+system_instruction = "The assistant should provide detailed explanations."
+template = (
+    f"{system_instruction} "
+    "Combine the chat history and follow up question into "
+    "a standalone question. Chat History: {chat_history}"
+    "Follow up question: {question}"
+)
+condense_question_prompt = PromptTemplate.from_template(template)
 qa = ConversationalRetrievalChain.from_llm(
     llm = model,
     retriever=retriever,
     return_source_documents=True,
+    condense_question_prompt=condense_question_prompt,
+    chain_type="stuff",
 )
-
 chain = load_qa_chain(model, chain_type="refine")
-query = "What's T-Store?"
-chain.run(input_documents=docs, question=query)
+query = "oque e T-Store ?"
 
+print("ate aqui foi")
+response = retriever.get_relevant_documents("T-Store")
+print(response)
+print("aqui e apos o retriever funcionar")
+# Examplo da Azure com qa
+chat_history = []
+result = {}
+awser = qa({"question": query, "chat_history": chat_history})
+chat_history.append((query, result["answer"]))
+print(awser)
 # Conversario memory
 
 conversation_memory = ConversationBufferWindowMemory(
