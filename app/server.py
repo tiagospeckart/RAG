@@ -97,16 +97,16 @@ qa = ConversationalRetrievalChain.from_llm(
 chain = load_qa_chain(model, chain_type="refine")
 query = "O que é a T-Store?"
 
-print("ate aqui foi")
-response = retriever.get_relevant_documents("T-Store")
-print(response)
-print("aqui e apos o retriever funcionar")
+# print("ate aqui foi")
+# response = retriever.get_relevant_documents("T-Store")
+# print(response)
+# print("aqui e apos o retriever funcionar")
 # Examplo da Azure com qa
 chat_history = []
 result = {}
-answser = qa({"question": query, "chat_history": chat_history})
-chat_history.append((query, answser))
-print(answser)
+# answser = qa({"question": query, "chat_history": chat_history})
+# chat_history.append((query, answser))
+# print(answser)
 # Conversario memory
 
 conversation_memory = ConversationBufferWindowMemory(
@@ -131,7 +131,7 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-# chain = prompt | model
+chain = prompt | model
 
 
 # classes
@@ -168,6 +168,10 @@ async def invoke_runnable2():
 @app.post(path + "/stream")
 async def stream_runnable():
     pass
+@app.get(path + "/chat/{msg}")
+async def chat_runnable(msg: str):
+    answser = qa({"question": msg, "chat_history": chat_history})
+    return answser
 
 
 # Server init
