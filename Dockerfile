@@ -1,14 +1,41 @@
-FROM python:3.11-slim
+FROM python:3.11.9-slim AS base
 
-# Install poetry
-RUN pip install poetry
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    POETRY_VERSION=1.8.1
 
-WORKDIR /code
+# Generate workable requirements.txt from Poetry dependencies
+FROM base as poetry-build
 
-COPY ./pyproject.toml ./README.md ./poetry.lock* ./.env ./
-COPY ./app ./app
+WORKDIR /app
 
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi
+RUN pip install "poetry==$POETRY_VERSION"
 
-CMD ["uvicorn", "app.server:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+RUN python -m pip install --no-cache-dir --upgrade poetry
+
+COPY pyproject.toml poetry.lock ./
+RUN poetry export -f requirements.txt --without-hashes -o requirements.txt
+
+FROM base as pip-build
+WORKDIR /wheels
+COPY --from=poetry-build /app/requirements.txt .
+RUN pip install -U pip  \
+    && pip wheel -r requirements.txt
+
+FROM base
+COPY --from=pip-build /wheels /wheels
+
+COPY ./data/docs/*.md ./data/docs/
+
+RUN pip install -U pip  \
+    && pip install \
+    --no-index \
+    -r /wheels/requirements.txt \
+    -f /wheels \
+    && rm -rf /wheels
+
+ADD . .
+
+ENV PYTHONPATH=/app
+
+CMD ["python", "/app/server.py"]

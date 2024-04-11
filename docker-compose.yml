@@ -12,15 +12,15 @@ services:
     env_file:
       - .env
 
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb
-    restart: always
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: secret
-      MONGO_INITDB_DATABASE: vectorDB
-    volumes:
-      - ./data:/data/db
+  # mongodb:
+  #   image: mongo:latest
+  #   container_name: mongodb
+  #   restart: always
+  #   ports:
+  #     - "27017:27017"
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: admin
+  #     MONGO_INITDB_ROOT_PASSWORD: secret
+  #     MONGO_INITDB_DATABASE: vectorDB
+  #   volumes:
+  #     - ./data:/data/db

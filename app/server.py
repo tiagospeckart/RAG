@@ -72,12 +72,12 @@ embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
 # print(embeddings.embed_documents)
 docschroma = chromautils.filter_complex_metadata(chunks)
 # print(docschroma[0])
-vectorstore = Chroma.from_documents(documents=chunks,
+vectorstore = Chroma.from_documents(documents=docschroma,
                                     embedding=embeddings,
-                                    persist_directory=chroma_folder
+                                    # persist_directory=chroma_folder
                                     )
 
-vectorstore.persist()
+# vectorstore.persist()
 retriever = vectorstore.as_retriever()
 system_instruction = "The assistant should provide detailed explanations."
 template = (
@@ -105,7 +105,6 @@ query = "O que é a T-Store?"
 chat_history = []
 result = {}
 # answser = qa({"question": query, "chat_history": chat_history})
-# chat_history.append((query, answser))
 # print(answser)
 # Conversario memory
 
@@ -136,6 +135,18 @@ chain = prompt | model
 
 # classes
 # TODO: refactor out to its proper place
+class Message(BaseModel):
+    role: str
+    content: str
+    model_config = {
+         "json_schema_extra": {
+            "examples":{ 
+                "role": "user",
+                "content": "What is T-Store?"
+            }
+        }
+    }
+
 class InputChat(BaseModel):
     """Input for the chat endpoint."""
 
@@ -168,8 +179,8 @@ async def invoke_runnable2():
 @app.post(path + "/stream")
 async def stream_runnable():
     pass
-@app.get(path + "/chat/{msg}")
-async def chat_runnable(msg: str):
+@app.get(path + "/chat")
+async def chat_runnable(msg : str ):
     answser = qa({"question": msg, "chat_history": chat_history})
     return answser
 
@@ -179,7 +190,7 @@ async def chat_runnable(msg: str):
 if __name__ == "__main__":
     import uvicorn
 
-    host = os.getenv("HOST", "localhost")
+    host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", 8000))
 
     uvicorn.run(app, host=host, port=port)
