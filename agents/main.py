@@ -20,5 +20,15 @@ if __name__ == "__main__":
     llm = azure_openai_api.create_llm()
     
     question = "What is T-Store?"
-    answer = azure_openai_api.ask(llm, question, documents)
-    print("\n" + answer)
+
+    answer = azure_openai_api.ask_documents(llm, question, documents)
+    print("\nAsk documents: " + answer)
+
+    chat = azure_openai_api.create_chat(llm, vectordb)
+
+    answer = azure_openai_api.ask_vectordb(chat, question)
+    print("\nAsk vectordb: " + answer['answer'])
+
+    question = "What was my last question?"
+    answer = azure_openai_api.ask_vectordb(chat, question)
+    print("\nAsk vectordb: " + answer['answer'])

@@ -1,7 +1,9 @@
 import os
-from langchain_openai import AzureChatOpenAI
+from langchain.chat_models import AzureChatOpenAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain.chains import ConversationalRetrievalChain
+from langchain.memory import VectorStoreRetrieverMemory
+from langchain.memory import ConversationBufferMemory
 
 import openai
 
@@ -14,10 +16,24 @@ def create_llm():
 
     return AzureChatOpenAI(temperature=0)
 
-def ask(llm, question, documents):
+def ask_documents(llm, question, documents):
     chain = load_qa_chain(llm, chain_type="refine")
     ## TODO use invoke()
     print("\nQuestion: " + question)
     return chain.run(input_documents=documents, question=question)
     
 
+def ask_vectordb(chat, question):
+    print("\nQuestion: " + question)
+    return chat.invoke(
+        {"question": question}
+    )
+
+
+def create_chat(llm, vectordb):
+    return ConversationalRetrievalChain.from_llm(
+        llm=llm,
+        retriever=vectordb.as_retriever(),
+        return_source_documents=False,
+        memory=ConversationBufferMemory(memory_key="chat_history", output_key="answer", input_key="question")
+    )
