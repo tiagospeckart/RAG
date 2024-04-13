@@ -1,8 +1,38 @@
-from dotenv import load_dotenv
-from langchain_community.vectorstores import Chroma
-
 import os
-import vector_database, text_splitter, document_loader, azure_openai_api
+import vector_database
+import text_splitter
+import document_loader
+import azure_openai_api
+import tool_manager
+import agent_manager
+
+# from langchain.agents
+from langchain_community.vectorstores import Chroma
+from dotenv import load_dotenv
+
+def test_llm():
+    question = "What is T-Store?"
+    answer = azure_openai_api.ask_documents(llm, question, documents)
+    print("\nAsk documents: " + answer)
+
+    chat = azure_openai_api.create_chat(llm, vectordb)
+
+    answer = azure_openai_api.ask_vectordb(chat, question)
+    print("\nAsk vectordb: " + answer['answer'])
+
+    # question = "What was my last question?"
+    # answer = azure_openai_api.ask_vectordb(chat, question)
+    # print("\nAsk vectordb: " + answer['answer'])
+
+def test_single_agent():
+    tools = tool_manager.get_tools()
+
+    agent = agent_manager.create_agent_executor(llm, tools)
+
+    query = "What is the current user id?"
+    # agent.run(query)
+    agent.invoke({"input": query})
+
 
 if __name__ == "__main__":
     load_dotenv("azure.env")
@@ -19,16 +49,5 @@ if __name__ == "__main__":
     
     llm = azure_openai_api.create_llm()
     
-    question = "What is T-Store?"
-
-    answer = azure_openai_api.ask_documents(llm, question, documents)
-    print("\nAsk documents: " + answer)
-
-    chat = azure_openai_api.create_chat(llm, vectordb)
-
-    answer = azure_openai_api.ask_vectordb(chat, question)
-    print("\nAsk vectordb: " + answer['answer'])
-
-    question = "What was my last question?"
-    answer = azure_openai_api.ask_vectordb(chat, question)
-    print("\nAsk vectordb: " + answer['answer'])
+    test_llm()
+    test_single_agent()

@@ -1,8 +1,7 @@
 import os
-from langchain.chat_models import AzureChatOpenAI
+from langchain_community.chat_models import AzureChatOpenAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain.chains import ConversationalRetrievalChain
-from langchain.memory import VectorStoreRetrieverMemory
 from langchain.memory import ConversationBufferMemory
 
 import openai
