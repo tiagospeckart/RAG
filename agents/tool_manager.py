@@ -1,6 +1,7 @@
 import requests
 
 from langchain.agents import Tool
+from langchain.tools.retriever import create_retriever_tool
 
 def comments_func(__query__):
     try:
@@ -26,21 +27,30 @@ def todos_func(__query__):
         return f"Error fetching todos: {e}"
     
 
-def get_tools():
+def create_verctor_db_tool(retriever):
+    return create_retriever_tool(
+        retriever,
+        "t-store-retriever",
+        "Query a retriever to get information about T-Store",
+    )
+    
+
+def get_tools(retriever):
     return [
         Tool(
-            name="commentsapi",
+            name="comments-api",
             func=comments_func,
-            description="Fetch comments from the API"
+            description="Never use this tool until users explicitly ask about comments"
         ),
-        Tool(
-            name="postsapi",
-            func=posts_func,
-            description="Fetch posts from the API"
-        ),
-        Tool(
-            name="todosapi",
-            func=todos_func,
-            description="Fetch todos from the API"
-        )
+        # Tool(
+        #     name="posts-api",
+        #     func=posts_func,
+        #     description="Never use this tool until users explicitly ask about posts"
+        # ),
+        # Tool(
+        #     name="todos-api",
+        #     func=todos_func,
+        #     description="Never use this tool until users explicitly ask about todos"
+        # ),
+        create_verctor_db_tool(retriever)
     ]

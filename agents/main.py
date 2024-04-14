@@ -21,16 +21,18 @@ def test_llm():
     print("\nAsk vectordb: " + answer['answer'])
     
 
-def test_single_agent():
-    tools = tool_manager.get_tools()
+def test_agent():
+    tools = tool_manager.get_tools(vectordb.as_retriever())
 
     agent = agent_manager.create_agent_executor(llm, tools)
 
     query = "Get me the comment with ID 1"    
     agent.invoke({"input": query})
-    query = "Get me the post with ID 1"
-    agent.invoke({"input": query})
-    query = "Get me the todo with ID 1"
+    # query = "Get me the post with ID 1"
+    # agent.invoke({"input": query})
+    # query = "Get me the todo with ID 1"
+    # agent.invoke({"input": query})
+    query = "What is T-Store?"
     agent.invoke({"input": query})
 
 
@@ -49,5 +51,5 @@ if __name__ == "__main__":
     
     llm = azure_openai_api.create_llm()
     
-    test_llm()
-    test_single_agent()
+    # test_llm()
+    test_agent()
