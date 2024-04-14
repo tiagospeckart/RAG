@@ -19,18 +19,18 @@ def test_llm():
 
     answer = azure_openai_api.ask_vectordb(chat, question)
     print("\nAsk vectordb: " + answer['answer'])
-
-    # question = "What was my last question?"
-    # answer = azure_openai_api.ask_vectordb(chat, question)
-    # print("\nAsk vectordb: " + answer['answer'])
+    
 
 def test_single_agent():
     tools = tool_manager.get_tools()
 
     agent = agent_manager.create_agent_executor(llm, tools)
 
-    query = "What is the current user id?"
-    # agent.run(query)
+    query = "Get me the comment with ID 1"    
+    agent.invoke({"input": query})
+    query = "Get me the post with ID 1"
+    agent.invoke({"input": query})
+    query = "Get me the todo with ID 1"
     agent.invoke({"input": query})
 
 
