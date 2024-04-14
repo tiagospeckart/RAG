@@ -31,7 +31,7 @@ def create_verctor_db_tool(retriever):
     return create_retriever_tool(
         retriever,
         "t-store-retriever",
-        "Query a retriever to get information about T-Store",
+        "Vector database retriever to get information about T-Store",
     )
     
 
@@ -40,17 +40,17 @@ def get_tools(retriever):
         Tool(
             name="comments-api",
             func=comments_func,
-            description="Never use this tool until users explicitly ask about comments"
+            description="Use this tool to retrieve 'comments' from 'jsonplaceholder.typicode.com'"
         ),
-        # Tool(
-        #     name="posts-api",
-        #     func=posts_func,
-        #     description="Never use this tool until users explicitly ask about posts"
-        # ),
-        # Tool(
-        #     name="todos-api",
-        #     func=todos_func,
-        #     description="Never use this tool until users explicitly ask about todos"
-        # ),
+        Tool(
+            name="posts-api",
+            func=posts_func,
+            description="Use this tool to retrieve 'posts' from 'jsonplaceholder.typicode.com'"
+        ),
+        Tool(
+            name="todos-api",
+            func=todos_func,
+            description="Use this tool to retrieve 'todos' from 'jsonplaceholder.typicode.com'"
+        ),
         create_verctor_db_tool(retriever)
     ]

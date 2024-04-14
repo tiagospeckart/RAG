@@ -28,10 +28,10 @@ def test_agent():
 
     query = "Get me the comment with ID 1"    
     agent.invoke({"input": query})
-    # query = "Get me the post with ID 1"
-    # agent.invoke({"input": query})
-    # query = "Get me the todo with ID 1"
-    # agent.invoke({"input": query})
+    query = "Get me the post with ID 1"
+    agent.invoke({"input": query})
+    query = "Get me the todo with ID 1"
+    agent.invoke({"input": query})
     query = "What is T-Store?"
     agent.invoke({"input": query})
 
