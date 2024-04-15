@@ -1,6 +1,7 @@
 import os
 from typing import List, Union
 
+import httpx
 import openai
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -31,7 +32,8 @@ openai.api_type = "azure"
 model = AzureChatOpenAI(
     deployment_name="gpt-35-turbo",
     temperature=0.1,
-    openai_api_version="2023-05-15"
+    openai_api_version="2023-05-15",
+    http_client=httpx.Client(verify=False)
 )
 
 # Start DocLoader
