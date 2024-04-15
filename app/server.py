@@ -78,7 +78,14 @@ vectorstore = Chroma.from_documents(documents=docschroma,
                                     embedding=embeddings,
                                     # persist_directory=chroma_folder
                                     )
+# Conversario memory
 
+conversation_memory = ConversationBufferWindowMemory(
+    memory_key='chat_history',
+    return_messages=True,
+    output_key="answer",
+    input_key="question",
+)
 # vectorstore.persist()
 retriever = vectorstore.as_retriever()
 system_instruction = "The assistant should provide detailed explanations."
@@ -95,9 +102,11 @@ qa = ConversationalRetrievalChain.from_llm(
     return_source_documents=True,
     condense_question_prompt=condense_question_prompt,
     chain_type="stuff",
+    get_chat_history=lambda h : h,
+    memory=conversation_memory
+    
 )
 chain = load_qa_chain(model, chain_type="refine")
-query = "O que é a T-Store?"
 
 # print("ate aqui foi")
 # response = retriever.get_relevant_documents("T-Store")
@@ -108,13 +117,6 @@ chat_history = []
 result = {}
 # answser = qa({"question": query, "chat_history": chat_history})
 # print(answser)
-# Conversario memory
-
-conversation_memory = ConversationBufferWindowMemory(
-    memory_key='chat_history',
-    k=2,
-    return_messages=True
-)
 # FastAPI configuration
 app = FastAPI(
     title="LangChain Server",
@@ -183,7 +185,8 @@ async def stream_runnable():
     pass
 @app.get(path + "/chat")
 async def chat_runnable(msg : str ):
-    answser = qa({"question": msg, "chat_history": chat_history})
+    answser = qa.invoke({"question": msg, "chat_history": conversation_memory})
+    # conversation_memory.asave_context(inputs=msg,outputs=answser)
     return answser
 
 

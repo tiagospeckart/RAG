@@ -26,8 +26,8 @@ FROM base
 COPY --from=pip-build /wheels /wheels
 
 COPY ./data/docs/*.md ./data/docs/
-
-RUN pip install -U pip  \
+# RUN pip install torch --index-url https://download.pytorch.org/whl/cpu
+RUN pip install -U pip \
     && pip install \
     --no-index \
     -r /wheels/requirements.txt \
