@@ -1,23 +1,41 @@
+FROM python:3.11.9-slim AS base
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    POETRY_VERSION=1.8.1
+
 # Generate workable requirements.txt from Poetry dependencies
-FROM python:3.11-slim AS requirements
+FROM base as poetry-build
+
+WORKDIR /app
+
+RUN pip install "poetry==$POETRY_VERSION"
 
 RUN python -m pip install --no-cache-dir --upgrade poetry
-
-WORKDIR /rag
 
 COPY pyproject.toml poetry.lock ./
 RUN poetry export -f requirements.txt --without-hashes -o requirements.txt
 
-FROM python:3.11-slim as builder
+FROM base as pip-build
+WORKDIR /wheels
+COPY --from=poetry-build /app/requirements.txt .
+RUN pip install -U pip  \
+    && pip wheel -r requirements.txt
 
-WORKDIR /rag
+FROM base
+COPY --from=pip-build /wheels /wheels
 
-# Copy requirements.txt from the 'requirements' stage
-COPY --from=requirements /rag/requirements.txt ./requirements.txt
+COPY ./data/docs/*.md ./data/docs/
+
+RUN pip install -U pip  \
+    && pip install \
+    --no-index \
+    -r /wheels/requirements.txt \
+    -f /wheels \
+    && rm -rf /wheels
+
 ADD . .
 
-# Install requirements
-RUN pip install --no-cache-dir -r requirements.txt
+ENV PYTHONPATH=/app
 
-# Run application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["python", "/app/server.py"]

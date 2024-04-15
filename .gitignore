@@ -4,7 +4,8 @@ venv
 
 # Data folder
 /data
-
+/db
+/app/files
 settings-me.yaml
 
 .ruff_cache
