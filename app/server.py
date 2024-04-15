@@ -30,7 +30,6 @@ openai.api_version = "2023-03-15-preview"
 openai.api_type = "azure"
 
 model = AzureChatOpenAI(
-    deployment_name="gpt-35-turbo",
     temperature=0.1,
     openai_api_version="2023-05-15",
     http_client=httpx.Client(verify=False)

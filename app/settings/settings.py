@@ -70,10 +70,11 @@ class AzureOpenAISettings(BaseModel):
         description="OpenAI Model to use. Example: 'text-embedding-ada-002'.",
     )
     llm_deployment_name: str
-    llm_model: str = Field(
+    llm_model: str = (Field(
         "gpt-35-turbo",
         description="OpenAI Model to use. Example: 'gpt-4'.",
-    )
+    ))
+    temperature: str
 
 
 class RerankSettings(BaseModel):
@@ -105,6 +106,7 @@ class RagSettings(BaseModel):
     rerank: RerankSettings
 
 
+# Update this Class with other Settings Classes as the project expands
 class Settings(BaseModel):
     server: ServerSettings
     data: DataSettings

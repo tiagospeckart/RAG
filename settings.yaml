@@ -21,6 +21,7 @@ azopenai:
   api_version: "2023-05-15"
   embedding_model: text-embedding-ada-002
   llm_model: gpt-35-turbo
+  temperature: 0.1
 
 rag:
   similarity_top_k: 2
