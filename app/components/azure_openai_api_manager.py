@@ -1,6 +1,5 @@
 import httpx
 from dotenv import load_dotenv
-from injector import inject
 from langchain_openai import AzureChatOpenAI
 
 load_dotenv()

@@ -1,6 +1,5 @@
 import os
 
-from injector import inject
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from langchain_community.vectorstores.chroma import Chroma
 
@@ -12,7 +11,6 @@ def generate_embeddings():
 
 
 class VectorDatabaseManager:
-    @inject
     def __init__(self, persist_directory: str):
         self.persist_directory = persist_directory
 
