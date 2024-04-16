@@ -1,13 +1,15 @@
 from typing import Union, List
 
 from fastapi import APIRouter
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, ChatMessage
 from langchain_core.prompts import MessagesPlaceholder, ChatPromptTemplate
 from pydantic import BaseModel, Field
 from starlette.responses import RedirectResponse
 
-chat_router = APIRouter(prefix="/v1")
+from server.chat.chat_service import ChatService
 
+chat_router = APIRouter(prefix="/v1")
+service = ChatService
 
 class Message(BaseModel):
     role: str
@@ -38,14 +40,11 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-
 @chat_router.get("/")
 async def redirect_to_docs():
     return RedirectResponse(url="/docs")
 
 
 @chat_router.get("/chat")
-async def chat_runnable(msg: str):
-    from server.chat.chat_service import chat_history, qa
-    answser = qa({"question": msg, "chat_history": chat_history})
-    return answser
+async def chat_runnable(service: ChatService, msg: str):
+    ChatService.query_chat(service, query=msg, chat_history=[])
