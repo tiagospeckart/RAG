@@ -1,36 +1,32 @@
 from typing import Union, List
 
-from fastapi import APIRouter
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, ChatMessage
+from fastapi import APIRouter, Depends
 from langchain_core.prompts import MessagesPlaceholder, ChatPromptTemplate
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from starlette.responses import RedirectResponse
 
-from server.chat.chat_service import ChatService
+from app.components.azure_openai_api_manager import SingletonAzureChat
+from app.components.chroma_document_store import ChromaDocumentStore
+from app.server.chat.chat_service import ChatService
 
-chat_router = APIRouter(prefix="/v1")
-service = ChatService
+chat_router = APIRouter()
+
+# Instantiation of required objects
+llm_component = SingletonAzureChat.get_instance()
+chroma_doc_store = ChromaDocumentStore().__init__
+
 
 class Message(BaseModel):
     role: str
     content: str
-    model_config = {
-        "json_schema_extra": {
-            "examples": {
-                "role": "user",
-                "content": "What is T-Store?"
-            }
-        }
-    }
 
 
 class InputChat(BaseModel):
-    """Input for the chat endpoint."""
+    messages: List[Union[Message]]
 
-    messages: List[Union[HumanMessage, AIMessage, SystemMessage]] = Field(
-        ...,
-        description="The chat messages representing the current conversation."
-    )
+
+def get_chat_service() -> ChatService:
+    return ChatService(llm_component, chroma_doc_store)
 
 
 prompt = ChatPromptTemplate.from_messages(
@@ -40,11 +36,16 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+
 @chat_router.get("/")
 async def redirect_to_docs():
     return RedirectResponse(url="/docs")
 
 
-@chat_router.get("/chat")
-async def chat_runnable(service: ChatService, msg: str):
-    ChatService.query_chat(service, query=msg, chat_history=[])
+@chat_router.post("/chat")
+async def chat_runnable(query: str, chat_service=Depends(get_chat_service)):
+    chat_history = []
+    answer = chat_service.query_chat(query, chat_history)
+    
+    return answer
+

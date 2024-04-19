@@ -12,13 +12,9 @@ cors:
   allow_headers: ${CORS_ALLOW_HEADERS:["*"]}
 
 azopenai:
-  api_key: ${AZ_OPENAI_API_KEY:}
-  azure_endpoint: ${AZ_OPENAI_ENDPOINT:}
-  api_version: ${AZ_OPENAI_API_VERSION:2023-05-15}
-  embedding_model: ${AZ_OPENAI_EMBEDDING_MODEL:text-embedding-ada-002}
-  llm_deployment_name: ${AZ_OPENAI_LLM_DEPLOYMENT_NAME:}
-  llm_model: ${AZ_OPENAI_LLM_DEPLOYMENT_NAME:gpt-35-turbo}
-  temperature: ${AZ_OPENAI_TEMPERATURE:0.1}
-
-vectorstore:
-  database: chroma
+  api_key: ${AZURE_OPENAI_API_KEY:}
+  azure_endpoint: ${AZURE_OPENAI_ENDPOINT:}
+  azure_deployment: ${AZURE_OPENAI_DEPLOYMENT:gpt-35-turbo}
+  api_version: ${AZURE_OPENAI_API_VERSION:2023-05-15}
+  embedding_model: ${AZURE_OPENAI_EMBEDDING_MODEL:text-embedding-ada-002}
+  temperature: ${AZURE_OPENAI_TEMPERATURE:0.1}

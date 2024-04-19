@@ -1,32 +1,29 @@
 import logging
 
-from injector import singleton, inject
-from langchain_core.vectorstores import VectorStore
+from injector import singleton
+from langchain_community.document_loaders import DirectoryLoader
+from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
+from langchain_community.vectorstores.chroma import Chroma
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from constants import DB_PATH
-from settings.settings import Settings
+from app import constants
 
 logger = logging.getLogger(__name__)
 
-from langchain_chroma import Chroma
-from langchain_community.document_loaders import TextLoader
-from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
-from langchain_text_splitters import CharacterTextSplitter
-
-
+@singleton
 class ChromaDocumentStore:
-    def __init__(self, documents_path: str, chunk_size: int = 1000, chunk_overlap: int = 0):
-        self.documents_path = documents_path
+    def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 0):
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
         self.chroma_db = self._initialize_chroma_db()
 
     def _initialize_chroma_db(self) -> Chroma:
-        loader = TextLoader(self.documents_path)
+        documents_path = constants.DOCUMENTS_PATH
+        loader = DirectoryLoader(documents_path, glob="**/*.md")
         documents = loader.load()
 
-        text_splitter = CharacterTextSplitter(chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap)
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap)
         split_documents = text_splitter.split_documents(documents)
 
         chroma_db = Chroma.from_documents(split_documents, self.embedding_function)
@@ -41,5 +38,3 @@ class ChromaDocumentStore:
     def update_document(self, document_id: str, updated_document):
         self.chroma_db.update_document(document_id, updated_document)
 
-    def delete_document(self, document_id: str):
-        self.chroma_db.delete_document(document_id)

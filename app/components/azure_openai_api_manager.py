@@ -1,11 +1,10 @@
-import httpx
-from dotenv import load_dotenv
 from langchain_openai import AzureChatOpenAI
+from injector import singleton
 
-load_dotenv()
+from app.settings.settings import settings
 
 
-# Singleton Class
+@singleton
 class SingletonAzureChat:
     _instance = None
 
@@ -18,11 +17,12 @@ class SingletonAzureChat:
     def __init__(self):
         if not self._initialized:
             self.model = AzureChatOpenAI(
-                http_client=httpx.Client(verify=False)
-            )
+                api_key=settings().azopenai.api_key,
+                azure_endpoint=settings().azopenai.azure_endpoint,
+                azure_deployment=settings().azopenai.azure_deployment
+                )
             self._initialized = True
 
-
-def get_azure_llm() -> AzureChatOpenAI:
-    singleton = SingletonAzureChat()
-    return singleton.model
+    @classmethod
+    def get_instance(cls) -> AzureChatOpenAI:
+        return cls()._instance.model
