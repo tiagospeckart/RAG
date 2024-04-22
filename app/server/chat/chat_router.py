@@ -96,12 +96,12 @@ async def chat_runnable(query: str, chat_service=Depends(get_chat_service)):
     
     return answer
 
-@chat_router.get("/chatAware")
+@chat_router.get("/chat_aware")
 async def chat_aware(msg : str ,session_id):
     answer = conversational_rag_chain.invoke(
-    {"input": msg},
-    config={
-        "configurable": {"session_id": session_id}
-    },
+        {"input": msg},
+        config={
+            "configurable": {"session_id": session_id}
+        },
     )["answer"]
     return answer

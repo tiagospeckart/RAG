@@ -39,9 +39,6 @@ def create_app(root_injector: Injector) -> FastAPI:
 
     api_prefix = "/v1"
     app.include_router(chat_router, prefix=api_prefix)
-    @app.get("/")
-    async def redirect_to_api_base():
-        return RedirectResponse(url=api_prefix)
 
     settings = root_injector.get(Settings)
 
