@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, root_validator
 
 from app.settings.settings_loader import load_settings
 
@@ -47,10 +47,19 @@ class ServerSettings(BaseModel):
     env_name: str = Field(
         description="Name of the environment (prod, staging, local...)"
     )
-    port: int = Field(description="Port of PrivateGPT FastAPI server, defaults to 8001")
+    port: int = Field(description="Port of FastAPI server, defaults to 8001")
     cors: CorsSettings = Field(
         description="CORS configuration", default=CorsSettings(enabled=False)
     )
+    # hack for port type validation
+    @root_validator(pre=True)
+    def parse_port(cls, values):
+        if 'port' in values and isinstance(values['port'], str):
+            try:
+                values['port'] = int(values['port'])  # Convert port string to int
+            except ValueError:
+                raise ValueError("Port must be a valid integer.")
+        return values
 
 
 class AzureOpenAISettings(BaseModel):

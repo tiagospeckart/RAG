@@ -1,7 +1,7 @@
 
 server:
   env_name: ${APP_ENV:dev}
-  port: ${PORT:8000}
+  port: ${PORT:8001}
 
 cors:
   enabled: ${CORS_ENABLED:false}

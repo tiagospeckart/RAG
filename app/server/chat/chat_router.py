@@ -89,15 +89,18 @@ async def redirect_to_docs():
     return RedirectResponse(url="/docs")
 
 
-@chat_router.post("/chat")
-async def chat_runnable(query: str, chat_service=Depends(get_chat_service)):
+@chat_router.get("/chat", tags=['chat'], description="Simple LLM chat with RAG")
+async def chat_with_rag(query: str, chat_service=Depends(get_chat_service)):
     chat_history = []
     answer = chat_service.query_chat(query, chat_history)
     
     return answer
 
-@chat_router.get("/chat_aware")
-async def chat_aware(msg : str ,session_id):
+@chat_router.get(
+    "/chat-history", 
+    tags=['chat'], 
+    description="LLM chat with RAG, Session Id and Chat History")
+async def chat_with_rag_session_and_history(msg : str ,session_id):
     answer = conversational_rag_chain.invoke(
         {"input": msg},
         config={

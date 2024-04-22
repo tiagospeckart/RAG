@@ -32,14 +32,20 @@ def create_app(root_injector: Injector) -> FastAPI:
         request.state.injector = root_injector
 
     # Fast API configuration + routing
-    app = FastAPI(title="LangChain RAG Server",
+    app = FastAPI(
+        title="LangChain RAG Server",
+        summary="Simple server to test and implement RAG with LLMs and LangChain to enhance the context of a query",
         version="1.0",
-        description="Spin up a simple API server using Langchain's Runnable interfaces",
         dependencies=[Depends(bind_injector_to_request)])
 
-    api_prefix = "/v1"
-    app.include_router(chat_router, prefix=api_prefix)
-
+    api_version_prefix = "/v1"
+    app.include_router(chat_router, prefix=api_version_prefix)
+    
+    # Redirect to /docs
+    @app.get("/")
+    def redirect_to_docs():
+        return RedirectResponse(url=api_version_prefix)
+    
     settings = root_injector.get(Settings)
 
     if settings.server.cors.enabled:
