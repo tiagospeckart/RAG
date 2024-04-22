@@ -12,29 +12,53 @@ logger = logging.getLogger(__name__)
 
 @singleton
 class ChromaDocumentStore:
+    """
+    ChromaDocumentStore represents a singleton document store utilizing the Chroma vectorization technique
+    for efficient text representation and retrieval.
+
+    This class enables chunking and vectorization of documents for advanced text-based operations.
+
+    Parameters:
+        chunk_size (int): Size of each document chunk in characters for processing.
+        chunk_overlap (int): Number of overlapping characters between consecutive document chunks.
+
+    Attributes:
+        chunk_size (int): Size of each document chunk.
+        chunk_overlap (int): Overlapping characters between chunks.
+        embedding_function (SentenceTransformerEmbeddings): Sentence embedding model for text vectorization.
+        chroma_db (Chroma): Chroma vector database initialized with chunked and vectorized documents.
+    """
     def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 0):
+        """
+        Initialize the ChromaDocumentStore with specified chunking parameters and setup the Chroma vector database.
+
+        Args:
+            chunk_size (int): Size of each document chunk in characters for processing.
+            chunk_overlap (int): Number of overlapping characters between consecutive document chunks.
+        """
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
         self.chroma_db = self._initialize_chroma_db()
 
     def _initialize_chroma_db(self) -> Chroma:
+        """
+        Initialize the Chroma vector database by loading and processing documents from a directory.
+
+        Returns:
+            Chroma: Initialized Chroma vector database.
+        """
+        logger.debug("Initializing Chroma Document store component=%s", type(self).__name__)
+        
+        # Load all Markdown files in the Documents Path as a List of Documents
         documents_path = constants.DOCUMENTS_PATH
         loader = DirectoryLoader(documents_path, glob="**/*.md")
         documents = loader.load()
 
+        # Split all Documents according to Chunking strategy
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap)
         split_documents = text_splitter.split_documents(documents)
 
-        chroma_db = Chroma.from_documents(split_documents, self.embedding_function)
-        return chroma_db
-
-    def query_similar_documents(self, query: str):
-        return self.chroma_db.similarity_search(query)
-
-    def add_documents(self, new_documents):
-        self.chroma_db.add_documents(new_documents)
-
-    def update_document(self, document_id: str, updated_document):
-        self.chroma_db.update_document(document_id, updated_document)
-
+        # Create Chroma vector database injesting the Chunks with the chosen Embedding Function
+        return Chroma.from_documents(split_documents, self.embedding_function)
+    

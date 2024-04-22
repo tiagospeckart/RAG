@@ -27,7 +27,7 @@ class ChatService:
         chat_history: list
     ) -> dict:
         chroma_db = self.chroma_doc_store.chroma_db
-        retriever = chroma_db.as_retriever(chroma_db)
+        retriever = chroma_db.as_retriever()
         llm_component = self.llm_component
         system_instruction = "The assistant should provide detailed explanations."
 

@@ -5,6 +5,3 @@ from app.launcher import create_app
 
 app = create_app(global_injector)
 
-
-
-

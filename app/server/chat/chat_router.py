@@ -13,13 +13,12 @@ chat_router = APIRouter()
 
 # Instantiation of required objects
 llm_component = SingletonAzureChat.get_instance()
-chroma_doc_store = ChromaDocumentStore().__init__
 
+chroma_doc_store = ChromaDocumentStore()
 
 class Message(BaseModel):
     role: str
     content: str
-
 
 class InputChat(BaseModel):
     messages: List[Union[Message]]
@@ -49,3 +48,9 @@ async def chat_runnable(query: str, chat_service=Depends(get_chat_service)):
     
     return answer
 
+@chat_router.post("/chat")
+async def chat_runnable(query: str, chat_service=Depends(get_chat_service)):
+    chat_history = []
+    answer = chat_service.query_chat(query, chat_history)
+    
+    return answer
