@@ -52,13 +52,17 @@ class ChromaDocumentStore:
         
         # Load all Markdown files in the Documents Path as a List of Documents
         documents_path = constants.DOCUMENTS_PATH
-        loader = DirectoryLoader(documents_path, glob="**/*.md")
+        text_loader_kwargs = {'autodetect_encoding': True}
+        loader = DirectoryLoader(documents_path, glob="**/*.md", loader_kwargs=text_loader_kwargs)
         documents = loader.load()
 
         # Split all Documents according to Chunking strategy
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap)
-        split_documents = text_splitter.split_documents(documents)
+        chunks = text_splitter.split_documents(documents)
+
+        print("Doc Split Size : " + str(len(chunks)))
+        print(chunks[0])
 
         # Create Chroma vector database injesting the Chunks with the chosen Embedding Function
-        return Chroma.from_documents(split_documents, self.embedding_function)
+        return Chroma.from_documents(chunks, self.embedding_function)
     
