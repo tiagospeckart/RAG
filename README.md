@@ -1,38 +1,45 @@
-# RAG
+# RAG: Retrieval-Augmented Generation with LLMs
 
-Project for developing a Retrieval-Augmented Generation with LLMs and data ingested from documents.
+## Introduction
+
+RAG is a project aimed at developing a Retrieval-Augmented Generation system utilizing Large Language Models (LLMs) and data ingested from documents.
 
 ## Tech Stack
 
-- Python 3.11
-- Poetry: package management
-- FastAPI: REST API
-- Uvicorn: ASGI server that powers FastAPI for serving HTTP requests.
-- LangChain: cahin orchestration
-- Pydantic: data validation and settings management using Python type annotations.
+- **Python 3.11**: Programming language used for development.
+- **Poetry**: Dependency management and virtual environment configuration.
+- **FastAPI**: Framework for building REST APIs.
+- **Uvicorn**: ASGI server powering FastAPI for serving HTTP requests.
+- **LangChain**: Chain orchestration tool.
+- **Pydantic**: Data validation and settings management using Python type annotations.
 
 ## Installation
 
-### Locally
+### Local Installation
 
-This project uses [Poetry](https://python-poetry.org/) for dependency management and virtual environment configuration. You can use your preferred Python environment setup easily, like `conda` or `venv`, and `poetry` will use your environment. If no environmet is setup, `poetry` will create a `.venv` folder in this project's root folder.
-
-Run `pipx install poetry`
+This project uses [Poetry](https://python-poetry.org/) for dependency management and virtual environment configuration. You can use your preferred Python environment setup easily, like `conda` or `venv`, and `poetry` will use your current environment. If no environmet is found, poetry will create a `.venv` folder in this project's root folder.
 
 #### Prerequisites
 
-- Any version of `python 3.11` in your `$PATH`
-- Configure your own environment variables. You can use an `.env` file using the `example.env` as reference.
+- Latest version of Poetry: `pipx install poetry`
+- Ensure Python 3.11 is available in your `$PATH`
+- Configure environment variables using an `.env` file (refer to `example.env`).
   - Missing fields may result in validation errors
 
 #### Steps
 
-- Run `poetry install` to download the dependencies
-- Run run it with `poetry run python app`
+1. Clone the repository and navigate to the project directory.
+2. Run `poetry install` to install project dependencies.
+3. Set up your environment variables in the `.env` file.
+4. Start the application with `make run`, which runs `poetry run python -m app`.
 
-### With Docker
+### Docker Installation
 
-Run `docker compose up`
+Run `docker compose up -d`
+
+- **Note**: This may take several minutes, as the current build uses local embedding models that require a lot of dependencies.
+
+While running container, you can upload a `Markdown` file at the data volume.
 
 ## About
 
