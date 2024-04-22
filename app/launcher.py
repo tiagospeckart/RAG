@@ -5,6 +5,8 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from injector import Injector
 
+from app import constants
+from app.components.chroma_document_store import ChromaDocumentStore
 from app.server.chat.chat_router import chat_router
 from app.settings.settings import Settings
 
@@ -12,20 +14,31 @@ logger = logging.getLogger(__name__)
 
 
 def create_app(root_injector: Injector) -> FastAPI:
-
     # Start the API
     async def bind_injector_to_request(request: Request) -> None:
+        """
+        Bind the root_injector to the state of incoming HTTP requests.
+
+        This function is used as a dependency in FastAPI to ensure that the root_injector
+        is available for use within the context of handling requests.
+
+        Parameters:
+        - request (Request): Represents the incoming HTTP request.
+
+        Returns:
+        - None
+        """
         request.state.injector = root_injector
 
     app = FastAPI(title="LangChain RAG Server",
-                  version="0.2",
-                  description="Spin up a simple API server using Langchain's Runnable interfaces",
-                  dependencies=[Depends(bind_injector_to_request)])
+        version="1.0",
+        description="Spin up a simple API server using Langchain's Runnable interfaces",
+        dependencies=[Depends(bind_injector_to_request)])
 
-    # TODO: add routes using "app.include_router(route)" later
-    app.include_router(chat_router)
+    app.include_router(chat_router, prefix="/v1")
 
     settings = root_injector.get(Settings)
+
     if settings.server.cors.enabled:
         logger.debug("Setting up CORS middleware")
         app.add_middleware(

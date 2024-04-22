@@ -4,13 +4,11 @@ version = "0.1.0"
 description = "Using LangChain and MongoDB for Retrieval-Augmented Generation with LLMs"
 authors = ["Tiago Martins Speckart <tiagospeckart@gmail.com>"]
 readme = "README.md"
-packages = [
-    { include = "app" },
-]
+packages = [{ include = "app" }]
 
 [tool.poetry.dependencies]
-python = ">=3.8.1,<4.0"
-uvicorn = "^0.23.2"
+python = ">=3.9.0,<3.12"
+uvicorn = ">=0.23.2"
 pydantic = "<2"
 fastapi = "^0.110.1"
 langchain = ">=0.1.15"
@@ -20,10 +18,12 @@ langchain-community = ">=0.0.31"
 python-dotenv = "^1.0.1"
 sentence-transformers = "^2.6.1"
 chromadb = "^0.4.24"
+injector = "^0.21.0"
+unstructured = {extras = ["md"], version = "^0.13.2"}
 
 
 [tool.poetry.group.dev.dependencies]
-langchain-cli = ">=0.0.15"
+langchain-cli = ">=0.0.21"
 
 [build-system]
 requires = ["poetry-core"]

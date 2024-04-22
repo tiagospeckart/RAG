@@ -1,5 +1,6 @@
 .venv
 .env
+.conda
 venv
 
 # Data folder

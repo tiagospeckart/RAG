@@ -7,13 +7,13 @@ class CorsSettings(BaseModel):
     """CORS configuration.
 
     For more details on the CORS configuration, see:
-    # * https://fastapi.tiangolo.com/tutorial/cors/
-    # * https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+    * https://fastapi.tiangolo.com/tutorial/cors/
+    * https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
     """
 
     enabled: bool = Field(
         description="Flag indicating if CORS headers are set or not."
-                    "If set to True, the CORS headers will be set to allow all origins, methods and headers.",
+        "If set to True, the CORS headers will be set to allow all origins, methods and headers.",
         default=False,
     )
     allow_credentials: bool = Field(
@@ -41,6 +41,9 @@ class CorsSettings(BaseModel):
 
 
 class ServerSettings(BaseModel):
+    """Server configuration.
+    It's used by __main__.py
+    """
     env_name: str = Field(
         description="Name of the environment (prod, staging, local...)"
     )
@@ -50,64 +53,37 @@ class ServerSettings(BaseModel):
     )
 
 
-class DataSettings(BaseModel):
-    local_data_folder: str = Field(
-        description="Path to local storage."
-                    "It will be treated as an absolute path if it starts with /"
-    )
-
-
 class AzureOpenAISettings(BaseModel):
-    api_key: str
-    azure_endpoint: str
+    api_key: str = Field(
+        description="Secret key, shoulb be set in environment",
+    )
+    azure_endpoint: str = Field(
+        description="Used to construct the Request endpoint",
+    )
+    azure_deployment: str = Field(
+        description="Used to construct the Request endpoint",
+    )
     api_version: str = Field(
         "2023_05_15",
         description="The API version to use for this operation. This follows the YYYY-MM-DD format.",
     )
-    embedding_deployment_name: str
     embedding_model: str = Field(
         "text-embedding-ada-002",
         description="OpenAI Model to use. Example: 'text-embedding-ada-002'.",
     )
-    llm_deployment_name: str
     llm_model: str = Field(
         "gpt-35-turbo",
         description="OpenAI Model to use. Example: 'gpt-4'.",
     )
-
-
-class RerankSettings(BaseModel):
-    enabled: bool = Field(
-        False,
-        description="This value controls whether a reranker should be included in the RAG pipeline.",
-    )
-    model: str = Field(
-        "cross-encoder/ms-marco-MiniLM-L-2-v2",
-        description="Rerank model to use. Limited to SentenceTransformer cross-encoder models.",
-    )
-    top_n: int = Field(
-        2,
-        description="This value controls the number of documents returned by the RAG pipeline.",
+    temperature: str = Field(
+        "0.1",
+        description="Value used to manipulate the behaviour of the llm",
     )
 
 
-class RagSettings(BaseModel):
-    similarity_top_k: int = Field(
-        2,
-        description="This value controls the number of documents returned by the RAG pipeline or considered for "
-                    "reranking if enabled.",
-    )
-    similarity_value: float = Field(
-        None,
-        description="If set, any documents retrieved from the RAG must meet a certain match score. Acceptable values "
-                    "are between 0 and 1.",
-    )
-    rerank: RerankSettings
-
-
+# Update this Class with other Settings Classes as the project expands
 class Settings(BaseModel):
     server: ServerSettings
-    data: DataSettings
     azopenai: AzureOpenAISettings
 
 
