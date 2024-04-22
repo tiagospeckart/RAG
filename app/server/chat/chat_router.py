@@ -1,21 +1,19 @@
 from typing import Union, List
 
 from fastapi import APIRouter, Depends
+from langchain.chains import create_history_aware_retriever
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.prompts import MessagesPlaceholder, ChatPromptTemplate
+from langchain_core.runnables.history import RunnableWithMessageHistory
 from pydantic import BaseModel
 from starlette.responses import RedirectResponse
 
-from langchain.chains import create_retrieval_chain
 from app.components.azure_openai_api_manager import SingletonAzureChat
 from app.components.chroma_document_store import ChromaDocumentStore
 from app.server.chat.chat_service import ChatService
-from langchain.chains import create_history_aware_retriever
-from langchain.chains.combine_documents import create_stuff_documents_chain
-
-from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_community.chat_message_histories import ChatMessageHistory
-
-from langchain_core.runnables.history import RunnableWithMessageHistory
 
 chat_router = APIRouter()
 

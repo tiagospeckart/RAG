@@ -1,8 +1,8 @@
 from injector import singleton, inject
 from langchain.chains import ConversationalRetrievalChain
+from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import AzureChatOpenAI
-from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 
 from app.components.azure_openai_api_manager import SingletonAzureChat
 from app.components.chroma_document_store import ChromaDocumentStore

@@ -1,6 +1,7 @@
 import logging
-from langchain_openai import AzureChatOpenAI
+
 from injector import singleton
+from langchain_openai import AzureChatOpenAI
 
 from app.settings.settings import settings
 

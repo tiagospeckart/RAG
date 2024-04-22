@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_VERSION=1.8.1
 
 # Generate workable requirements.txt from Poetry dependencies
-FROM base as poetry-build
+FROM base AS poetry-build
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ RUN python -m pip install --no-cache-dir --upgrade poetry
 COPY pyproject.toml poetry.lock ./
 RUN poetry export -f requirements.txt --without-hashes -o requirements.txt
 
-FROM base as pip-build
+FROM base AS pip-build
 WORKDIR /wheels
 COPY --from=poetry-build /app/requirements.txt .
 RUN pip install -U pip  \
@@ -26,7 +26,7 @@ FROM base
 COPY --from=pip-build /wheels /wheels
 
 COPY ./data/docs/*.md ./data/docs/
-# RUN pip install torch --index-url https://download.pytorch.org/whl/cpu
+
 RUN pip install -U pip \
     && pip install \
     --no-index \
@@ -36,6 +36,4 @@ RUN pip install -U pip \
 
 ADD . .
 
-ENV PYTHONPATH=/app
-
-CMD ["python", "/app/server.py"]
+CMD ["poetry run python -m app"]

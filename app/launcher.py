@@ -3,6 +3,7 @@ import logging
 
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from injector import Injector
 
 from app import constants
@@ -30,12 +31,17 @@ def create_app(root_injector: Injector) -> FastAPI:
         """
         request.state.injector = root_injector
 
+    # Fast API configuration + routing
     app = FastAPI(title="LangChain RAG Server",
         version="1.0",
         description="Spin up a simple API server using Langchain's Runnable interfaces",
         dependencies=[Depends(bind_injector_to_request)])
 
-    app.include_router(chat_router, prefix="/v1")
+    api_prefix = "/v1"
+    app.include_router(chat_router, prefix=api_prefix)
+    @app.get("/")
+    async def redirect_to_api_base():
+        return RedirectResponse(url=api_prefix)
 
     settings = root_injector.get(Settings)
 
