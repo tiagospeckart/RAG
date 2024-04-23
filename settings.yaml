@@ -1,0 +1,20 @@
+
+server:
+  env_name: ${APP_ENV:dev}
+  port: ${PORT:8001}
+
+cors:
+  enabled: ${CORS_ENABLED:false}
+  allow_credentials: ${CORS_ALLOW_CREDENTIALS:false}
+  allow_origins: ${CORS_ALLOW_ORIGINS:["*"]}
+  allow_origin_regex: ${CORS_ALLOW_ORIGIN_REGEX:["*"]}
+  allow_methods: ${CORS_ALLOW_METHODS:["*"]}
+  allow_headers: ${CORS_ALLOW_HEADERS:["*"]}
+
+azopenai:
+  api_key: ${AZURE_OPENAI_API_KEY:}
+  azure_endpoint: ${AZURE_OPENAI_ENDPOINT:}
+  azure_deployment: ${AZURE_OPENAI_DEPLOYMENT:gpt-35-turbo}
+  api_version: ${AZURE_OPENAI_API_VERSION:2023-05-15}
+  embedding_model: ${AZURE_OPENAI_EMBEDDING_MODEL:text-embedding-ada-002}
+  temperature: ${AZURE_OPENAI_TEMPERATURE:0.1}

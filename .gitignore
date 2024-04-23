@@ -1,7 +1,12 @@
 .venv
-*.env
+.env
+.conda
 venv
 
+# Data folder
+/data
+/db
+/app/files
 settings-me.yaml
 
 .ruff_cache
@@ -29,3 +34,6 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# files
+wiki-single-file.md

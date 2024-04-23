@@ -1,82 +1,46 @@
-# RAG
+# RAG: Retrieval-Augmented Generation with LLMs
 
-Project for developing a Retrieval-Augmented Generation with LLMs and data ingested from documents.
+## Introduction
+
+RAG is a project aimed at developing a Retrieval-Augmented Generation system utilizing Large Language Models (LLMs) and data ingested from documents.
 
 ## Tech Stack
 
-- Python 3.11
-- Poetry: package management
-- FastAPI + LangServe for API endpoints and playground (experimental)
-- Uvicorn: ASGI server that powers FastAPI for serving HTTP requests.
-- LangChain
-- Pydantic: data validation and settings management using Python type annotations.
+- **Python 3.11**: Programming language used for development.
+- **Poetry**: Dependency management and virtual environment configuration.
+- **FastAPI**: Framework for building REST APIs.
+- **Uvicorn**: ASGI server powering FastAPI for serving HTTP requests.
+- **LangChain**: Chain orchestration tool.
+- **Pydantic**: Data validation and settings management using Python type annotations.
 
 ## Installation
 
-Install the LangChain CLI if you haven't yet
+### Local Installation
 
-```bash
-pip install -U langchain-cli
-```
+This project uses [Poetry](https://python-poetry.org/) for dependency management and virtual environment configuration. You can use your preferred Python environment setup easily, like `conda` or `venv`, and `poetry` will use your current environment. If no environmet is found, poetry will create a `.venv` folder in this project's root folder.
 
-## Adding packages
+#### Prerequisites
 
-```bash
-# adding packages from 
-# https://github.com/langchain-ai/langchain/tree/master/templates
-langchain app add $PROJECT_NAME
+- Latest version of Poetry: `pipx install poetry`
+- Ensure Python 3.11 is available in your `$PATH`
+- Configure environment variables using an `.env` file (refer to `example.env`).
+  - Missing fields may result in validation errors
 
-# adding custom GitHub repo packages
-langchain app add --repo $OWNER/$REPO
-# or with whole git string (supports other git providers):
-# langchain app add git+https://github.com/hwchase17/chain-of-verification
+#### Steps
 
-# with a custom api mount point (defaults to `/{package_name}`)
-langchain app add $PROJECT_NAME --api_path=/my/custom/path/rag
-```
+1. Clone the repository and navigate to the project directory.
+2. Run `poetry install` to install project dependencies.
+3. Set up your environment variables in the `.env` file.
+4. Start the application with `make run`, which runs `poetry run python -m app`.
 
-Note: you remove packages by their api path
+### Docker Installation
 
-```bash
-langchain app remove my/custom/path/rag
-```
+Run `docker compose up -d`
 
-## Launch LangServe
+- **Note**: This may take several minutes, as the current build uses local embedding models that require a lot of dependencies.
 
-```bash
-langchain serve
-```
+While running container, you can upload a `Markdown` file at the data volume.
 
-## Running in Docker
+## About
 
-This project folder includes a Dockerfile that allows you to easily build and host your LangServe app.
-
-### Building the Image
-
-To build the image, you simply:
-
-```shell
-docker build . -t my-langserve-app
-```
-
-If you tag your image with something other than `my-langserve-app`,
-note it for use in the next step.
-
-### Running the Image Locally
-
-To run the image, you'll need to include any environment variables
-necessary for your application.
-
-In the below example, we inject the `OPENAI_API_KEY` environment
-variable with the value set in my local environment
-(`$OPENAI_API_KEY`)
-
-We also expose port 8080 with the `-p 8080:8080` option.
-
-```shell
-docker run -e OPENAI_API_KEY=$OPENAI_API_KEY -p 8080:8080 my-langserve-app
-```
-
-## References
-
-[LangChain Templates](https://github.com/langchain-ai/langchain/tree/master/templates)
+This project has been strongly influenced and supported by other amazing projects like PrivateGPT and LangChain.
