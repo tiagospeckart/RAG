@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED=1 \
 # Generate workable requirements.txt from Poetry dependencies
 FROM base AS poetry-build
 
-WORKDIR /app
+WORKDIR /rag
 
 RUN pip install "poetry==$POETRY_VERSION"
 
@@ -18,14 +18,12 @@ RUN poetry export -f requirements.txt --without-hashes -o requirements.txt
 
 FROM base AS pip-build
 WORKDIR /wheels
-COPY --from=poetry-build /app/requirements.txt .
+COPY --from=poetry-build /rag/requirements.txt .
 RUN pip install -U pip  \
     && pip wheel -r requirements.txt
 
 FROM base
 COPY --from=pip-build /wheels /wheels
-
-COPY ./data/docs/*.md ./data/docs/
 
 RUN pip install -U pip \
     && pip install \
@@ -34,6 +32,7 @@ RUN pip install -U pip \
     -f /wheels \
     && rm -rf /wheels
 
-ADD . .
+COPY app app
+COPY settings.yaml settings.yaml
 
-CMD ["poetry run python -m app"]
+ENTRYPOINT ["python", "-m", "app"]

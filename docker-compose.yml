@@ -13,4 +13,4 @@ services:
     env_file:
       - .env
     volumes:
-      - data
+      - ./data/docs:/data/docs
