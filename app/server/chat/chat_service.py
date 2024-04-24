@@ -5,30 +5,30 @@ from langchain_core.prompts import PromptTemplate
 from langchain_openai import AzureChatOpenAI
 
 from app.components.azure_openai_api_manager import SingletonAzureChat
-from app.components.chroma_document_store import ChromaDocumentStore
+from app.components.document_store import FAISSDocumentStore
 
 
 @singleton
 class ChatService:
     llm_component: AzureChatOpenAI
-    chroma_doc_store: ChromaDocumentStore
+    faiss_doc_store: FAISSDocumentStore
 
     @inject
     def __init__(
         self,
         llm_component: AzureChatOpenAI,
-        chroma_doc_store: ChromaDocumentStore
+        faiss_doc_store: FAISSDocumentStore
     ) -> None:
         self.llm_component = llm_component
-        self.chroma_doc_store = chroma_doc_store
+        self.faiss_doc_store = faiss_doc_store
 
     def query_chat(
         self,
         query: str,
         chat_history: list
     ) -> dict:
-        chroma_db = self.chroma_doc_store.chroma_db
-        retriever = chroma_db.as_retriever(
+        faiss_db = self.faiss_doc_store.faiss_db
+        retriever = faiss_db.as_retriever(
             search_type="similarity",
             search_kwargs={"k": 3}
         )

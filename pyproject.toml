@@ -20,6 +20,7 @@ sentence-transformers = "^2.6.1"
 chromadb = "^0.4.24"
 injector = "^0.21.0"
 unstructured = {extras = ["md"], version = "^0.13.2"}
+faiss-cpu = "^1.8.0"
 
 
 [tool.poetry.group.dev.dependencies]

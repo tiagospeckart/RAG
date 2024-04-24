@@ -3,17 +3,17 @@ import logging
 from injector import singleton
 from langchain_community.document_loaders import DirectoryLoader
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
-from langchain_community.vectorstores.chroma import Chroma
+from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from app import constants
 
 logger = logging.getLogger(__name__)
-
+    
 @singleton
-class ChromaDocumentStore:
+class FAISSDocumentStore:
     """
-    ChromaDocumentStore represents a singleton document store utilizing the Chroma vectorization technique
+    FAISSDocumentStore represents a singleton document store utilizing the FAISS vectorization technique
     for efficient text representation and retrieval.
 
     This class enables chunking and vectorization of documents for advanced text-based operations.
@@ -26,11 +26,11 @@ class ChromaDocumentStore:
         chunk_size (int): Size of each document chunk.
         chunk_overlap (int): Overlapping characters between chunks.
         embedding_function (SentenceTransformerEmbeddings): Sentence embedding model for text vectorization.
-        chroma_db (Chroma): Chroma vector database initialized with chunked and vectorized documents.
+        faiss_db (FAISS): FAISS vector database initialized with chunked and vectorized documents.
     """
     def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 0):
         """
-        Initialize the ChromaDocumentStore with specified chunking parameters and setup the Chroma vector database.
+        Initialize the FAISSDocumentStore with specified chunking parameters and setup the FAISS vector database.
 
         Args:
             chunk_size (int): Size of each document chunk in characters for processing.
@@ -39,16 +39,16 @@ class ChromaDocumentStore:
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
-        self.chroma_db = self._initialize_chroma_db()
+        self.faiss_db = self._initialize_faiss_db()
 
-    def _initialize_chroma_db(self) -> Chroma:
+    def _initialize_faiss_db(self) -> FAISS:
         """
-        Initialize the Chroma vector database by loading and processing documents from a directory.
+        Initialize the FAISS vector database by loading and processing documents from a directory.
 
         Returns:
-            Chroma: Initialized Chroma vector database.
+            FAISS: Initialized FAISS vector database.
         """
-        logger.debug("Initializing Chroma Document store component=%s", type(self).__name__)
+        logger.debug("Initializing FAISS Document store component=%s", type(self).__name__)
         
         # Load all Markdown files in the Documents Path as a List of Documents
         documents_path = constants.DOCUMENTS_PATH
@@ -63,6 +63,6 @@ class ChromaDocumentStore:
         print("Doc Split Size : " + str(len(chunks)))
         print(chunks[0])
 
-        # Create Chroma vector database injesting the Chunks with the chosen Embedding Function
-        return Chroma.from_documents(chunks, self.embedding_function)
+        # Create FAISS vector database injesting the Chunks with the chosen Embedding Function
+        return FAISS.from_documents(chunks, self.embedding_function)
     

@@ -7,7 +7,7 @@ from fastapi.responses import RedirectResponse
 from injector import Injector
 
 from app import constants
-from app.components.chroma_document_store import ChromaDocumentStore
+from app.components.document_store import FAISSDocumentStore
 from app.server.chat.chat_router import chat_router
 from app.settings.settings import Settings
 

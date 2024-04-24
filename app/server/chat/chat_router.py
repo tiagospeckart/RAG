@@ -12,14 +12,14 @@ from pydantic import BaseModel
 from starlette.responses import RedirectResponse
 
 from app.components.azure_openai_api_manager import SingletonAzureChat
-from app.components.chroma_document_store import ChromaDocumentStore
+from app.components.document_store import FAISSDocumentStore
 from app.server.chat.chat_service import ChatService
 
 chat_router = APIRouter()
 
 # Instantiation of required objects
 llm_component = SingletonAzureChat.get_instance()
-chroma_doc_store = ChromaDocumentStore()
+faiss_doc_store = FAISSDocumentStore()
 
 class Message(BaseModel):
     role: str
@@ -30,7 +30,7 @@ class InputChat(BaseModel):
 
 
 def get_chat_service() -> ChatService:
-    return ChatService(llm_component, chroma_doc_store)
+    return ChatService(llm_component, faiss_doc_store)
 
 
 prompt = ChatPromptTemplate.from_messages(
@@ -54,7 +54,7 @@ contextualize_q_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 history_aware_retriever = create_history_aware_retriever(
-    llm_component, chroma_doc_store.chroma_db.as_retriever(), contextualize_q_prompt
+    llm_component, faiss_doc_store.faiss_db.as_retriever(), contextualize_q_prompt
 )
 qa_system_prompt = """You are an assistant for question-answering tasks. \
 Use the following pieces of retrieved context to answer the question. \
