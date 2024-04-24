@@ -2,6 +2,7 @@ import os
 from typing import List, Union
 
 import httpx
+from langchain_weaviate import WeaviateVectorStore
 import openai
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -25,6 +26,8 @@ from langchain.chains import create_history_aware_retriever
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain.vectorstores.weaviate import Weaviate
+import weaviate
 
 # load environment variables
 load_dotenv()
@@ -79,12 +82,16 @@ embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
 # print(embeddings.embed_documents)
 docschroma = chromautils.filter_complex_metadata(chunks)
 # print(docschroma[0])
-vectorstore = Chroma.from_documents(documents=docschroma,
-                                    embedding=embeddings,
-                                    # persist_directory=chroma_folder
-                                    )
-# Conversario memory
+# vectorstore = Chroma.from_documents(documents=docschroma,
+#                                     embedding=embeddings,
+#                                     # persist_directory=chroma_folder
+#                                     )
+# # Conversario memory
 
+client = weaviate.connect_to_local()
+vectorstore = WeaviateVectorStore.from_documents(documents=chunks,
+                                                 embedding=embeddings,
+                                                 client=client)
 conversation_memory = ConversationBufferWindowMemory(
     memory_key='chat_history',
     return_messages=True,
@@ -168,6 +175,7 @@ conversational_rag_chain = RunnableWithMessageHistory(
     input_messages_key="input",
     history_messages_key="chat_history",
     output_messages_key="answer",
+    return_source_documents=True,
 )
 # Aware Retriever end
 # FastAPI configuration
