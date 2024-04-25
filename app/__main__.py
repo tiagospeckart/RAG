@@ -2,7 +2,6 @@
 
 import uvicorn
 
-from app.main import app
 from app.settings.settings import settings
 
 # Set log_config=None to do not use the uvicorn logging configuration

@@ -4,7 +4,6 @@ from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import AzureChatOpenAI
 
-from app.components.azure_openai_api_manager import SingletonAzureChat
 from app.components.chroma_document_store import ChromaDocumentStore
 
 
